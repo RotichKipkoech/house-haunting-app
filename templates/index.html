@@ -1,27 +1,26 @@
 {% extends 'base.html' %}
 
-{% block title %}House Listings{% endblock %}
+{% block title %}Home{% endblock %}
 
 {% block content %}
     <h1>Available Houses</h1>
     <div class="row">
         {% for house in houses %}
-        <div class="col-md-4">
-            <div class="card mb-4">
-                {% if house.image_file %}
-                <img class="card-img-top" src="{{ url_for('static', filename='uploads/' + house.image_file) }}" alt="House Image">
-                {% endif %}
-                <div class="card-body">
-                    <h5 class="card-title">{{ house.title }}</h5>
-                    <p class="card-text">{{ house.description }}</p>
-                    <p><strong>Price:</strong> ${{ house.price }}</p>
-                    <p><strong>Location:</strong> {{ house.location }}</p>
-                    <p><strong>Status:</strong> {{ 'Available' if house.available else 'Taken' }}</p>
-                    <a href="{{ url_for('edit_house', id=house.id) }}" class="btn btn-warning">Edit</a>
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <img src="{{ url_for('static', filename='uploads/' ~ house.image_file) }}" class="card-img-top" alt="House Image">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ house.title }}</h5>
+                        <p class="card-text">{{ house.description }}</p>
+                        <p class="card-text">Price: ${{ house.price }}</p>
+                        <p class="card-text">Location: {{ house.location }}</p>
+                        <p class="card-text">Status: {{ 'Available' if house.available else 'Taken' }}</p>
+                        {% if current_user.is_authenticated and current_user.is_admin %}
+                            <a href="{{ url_for('edit_house', id=house.id) }}" class="btn btn-primary">Edit</a>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
-        </div>
         {% endfor %}
     </div>
-    <a href="{{ url_for('add_house') }}" class="btn btn-primary">Add New House</a>
 {% endblock %}

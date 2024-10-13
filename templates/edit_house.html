@@ -6,12 +6,12 @@
     <h1>Edit House</h1>
     <form method="POST" enctype="multipart/form-data">
         <div class="form-group">
-            <label for="title">House Title</label>
+            <label for="title">Title</label>
             <input type="text" class="form-control" id="title" name="title" value="{{ house.title }}" required>
         </div>
         <div class="form-group">
             <label for="description">Description</label>
-            <textarea class="form-control" id="description" name="description" rows="4" required>{{ house.description }}</textarea>
+            <textarea class="form-control" id="description" name="description" required>{{ house.description }}</textarea>
         </div>
         <div class="form-group">
             <label for="price">Price</label>
@@ -27,11 +27,8 @@
         </div>
         <div class="form-group">
             <label for="image_file">House Image</label>
-            <input type="file" class="form-control-file" id="image_file" name="image_file" accept="image/*">
-            {% if house.image_file %}
-                <img src="{{ url_for('static', filename='uploads/' + house.image_file) }}" alt="House Image" class="img-thumbnail mt-2" width="200">
-            {% endif %}
+            <input type="file" class="form-control" id="image_file" name="image_file">
         </div>
-        <button type="submit" class="btn btn-primary">Update House</button>
+        <button type="submit" class="btn btn-primary mt-3">Update House</button>
     </form>
 {% endblock %}
