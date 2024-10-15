@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{{ house.title }}</h1>
+    <img src="{{ url_for('static', filename='uploads/' + house.image_file) }}" class="img-fluid" alt="House Image">
+    <p><strong>Description:</strong> {{ house.description }}</p>
+    <p><strong>Price:</strong> Ksh.{{ house.price }}</p>
+    <p><strong>Location:</strong> {{ house.location }}</p>
+    <p><strong>Contact Name:</strong> {{ house.contact_name }}</p>
+    <p><strong>Contact Phone:</strong> {{ house.contact_phone }}</p>
+    <p><strong>Available</strong> {{ house.available }}</p>
+    
+    <h3>Additional Images</h3>
+    <div class="row">
+        {% for img in house.get_additional_images() %}
+            <div class="col-md-4">
+                <img src="{{ url_for('static', filename='uploads/' + img) }}" class="img-fluid" alt="Additional House Image">
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

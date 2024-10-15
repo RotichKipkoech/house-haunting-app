@@ -33,7 +33,14 @@ class House(db.Model):
     price = db.Column(db.Float, nullable=False)
     location = db.Column(db.String(100), nullable=False)
     image_file = db.Column(db.String(120), nullable=True)
-    available = db.Column(db.Boolean, default=True)
+    contact_name = db.Column(db.String(100), nullable=False)
+    contact_phone = db.Column(db.String(15), nullable=False)
+    additional_images = db.Column(db.Text, nullable=True)
+
+    def get_additional_images(self):
+        if self.additional_images:
+            return self.additional_images.split(',')
+        return []
 
 # Check allowed image extensions
 def allowed_file(filename):
@@ -62,14 +69,36 @@ def add_house():
         description = request.form['description']
         price = request.form['price']
         location = request.form['location']
+        contact_name = request.form['contact_name']
+        contact_phone = request.form['contact_phone']
 
         image_file = request.files['image_file']
+        additional_images = request.files.getlist('additional_images')
         image_filename = None
+        additional_image_filenames = []
+
         if image_file and allowed_file(image_file.filename):
             image_filename = secure_filename(image_file.filename)
             image_file.save(os.path.join(app.config['UPLOAD_FOLDER'], image_filename))
 
-        new_house = House(title=title, description=description, price=price, location=location, image_file=image_filename)
+        for img in additional_images:
+            if img and allowed_file(img.filename):
+                img_filename = secure_filename(img.filename)
+                img.save(os.path.join(app.config['UPLOAD_FOLDER'], img_filename))
+                additional_image_filenames.append(img_filename)
+
+        additional_images_str = ','.join(additional_image_filenames)
+
+        new_house = House(
+            title=title,
+            description=description,
+            price=price,
+            location=location,
+            image_file=image_filename,
+            contact_name=contact_name,
+            contact_phone=contact_phone,
+            additional_images=additional_images_str
+        )
         db.session.add(new_house)
         db.session.commit()
         return redirect(url_for('index'))
@@ -89,14 +118,25 @@ def edit_house(id):
         house.description = request.form['description']
         house.price = request.form['price']
         house.location = request.form['location']
-        house.available = 'available' in request.form
+        house.contact_name = request.form['contact_name']
+        house.contact_phone = request.form['contact_phone']
 
         image_file = request.files['image_file']
+        additional_images = request.files.getlist('additional_images')
+
         if image_file and allowed_file(image_file.filename):
             image_filename = secure_filename(image_file.filename)
             image_file.save(os.path.join(app.config['UPLOAD_FOLDER'], image_filename))
             house.image_file = image_filename
 
+        additional_image_filenames = house.get_additional_images()
+        for img in additional_images:
+            if img and allowed_file(img.filename):
+                img_filename = secure_filename(img.filename)
+                img.save(os.path.join(app.config['UPLOAD_FOLDER'], img_filename))
+                additional_image_filenames.append(img_filename)
+
+        house.additional_images = ','.join(additional_image_filenames)
         db.session.commit()
         return redirect(url_for('index'))
 
@@ -135,6 +175,12 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('login'))
+
+# Route to view house details
+@app.route('/house/<int:house_id>')
+def house_detail(house_id):
+    house = House.query.get_or_404(house_id)
+    return render_template('house_detail.html', house=house)
 
 # Run the app
 if __name__ == '__main__':
