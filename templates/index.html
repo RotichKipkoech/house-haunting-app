@@ -10,7 +10,7 @@
                     <div class="card-body">
                         <h5 class="card-title">{{ house.title }}</h5>
                         <p class="card-text">{{ house.description }}</p>
-                        <p class="card-text">Price: ${{ house.price }}</p>
+                        <p class="card-text">Price: Ksh.{{ house.price }}</p>
                         <a href="{{ url_for('house_detail', house_id=house.id) }}" class="btn btn-primary">View More</a>
                         {% if current_user.is_authenticated and current_user.is_admin %}
                             <a href="{{ url_for('edit_house', id=house.id) }}" class="btn btn-primary">Edit</a>
