@@ -51,6 +51,7 @@ def allowed_file(filename):
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+#Routes
 # Home route
 @app.route('/')
 def index():
